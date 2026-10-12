@@ -8,7 +8,8 @@
 # - codes.use.default : Výchozí předvolená permise pro nově vytvořené kódy
 #
 # ADMIN PERMISE:
-# - codes.admin.gui : Přístup k administračnímu GUI (/codes) a příkazům /ecode
+# - codes.admin.gui : Přístup k administračnímu GUI (/codes)
+# - codes.admin.edit-cmds : Přístup k příkazům správy kódů (/ecode create, delete, edit)
 # - codes.admin.reset : Oprávnění k resetu kódu pro hráče (/acode reset)
 # - codes.admin.reload : Oprávnění k načtení konfigurace (/acode reload)
 # - codes.admin.list : Oprávnění k zobrazení seznamu kódů (/acode list)
@@ -127,9 +128,8 @@ gui:
           - ""
           - "&eKlikni pro změnu limitu na IP"
       uses-global:
-        slot:
-          slot: 13
-          material: "BEACON"
+        slot: 13
+        material: "BEACON"
         title: "&eGlobální Limit (-1 = ∞)"
         lore:
           - "&7Aktuální: &f%used% / %max%"
