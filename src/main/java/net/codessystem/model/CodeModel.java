@@ -5,6 +5,7 @@ import java.util.List;
 
 public class CodeModel {
     private String code;
+    private String stableCode;
     private String displayName;
     private String permission;
     private String command;
@@ -17,8 +18,9 @@ public class CodeModel {
 
     public CodeModel(String code, String displayName, String permission, String command, int usesGlobal) {
         this.code = code;
+        this.stableCode = code;
         this.displayName = displayName != null ? displayName : code;
-        this.permission = permission != null ? permission : "codes.use.code";
+        this.permission = permission != null ? permission : "codes.use.default";
         this.command = command != null ? command : "[console] give %player% diamond 1";
         this.usesSingle = 1;
         this.usesGlobal = usesGlobal;
@@ -30,6 +32,13 @@ public class CodeModel {
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
+
+    public String getStableCode() { return stableCode != null ? stableCode : code; }
+    public void setStableCode(String stableCode) { this.stableCode = stableCode; }
+
+    public String getActiveCode() {
+        return refresh ? code : getStableCode();
+    }
 
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
