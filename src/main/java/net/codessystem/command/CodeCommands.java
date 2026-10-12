@@ -3,6 +3,7 @@ package net.codessystem.command;
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length < 1) {
-                player.sendMessage(plugin.getMessage("code-not-found"));
+                player.sendMessage(plugin.getMessage("help-code"));
                 return true;
             }
             redeemCode(player, args[0]);
@@ -46,28 +47,31 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
         if (name.equals("ecode")) {
             if (args.length == 0) {
-                sender.sendMessage("Použití: /ecode <create|delete|edit>");
+                sender.sendMessage(plugin.getMessage("help-ecode"));
                 return true;
             }
             if (args[0].equalsIgnoreCase("create")) {
-                if (args.length < 5) {
-                    sender.sendMessage("Použití: /ecode create <kod> <pocet_pouziti> <command> <permise>");
+                if (args.length < 2) {
+                    sender.sendMessage(plugin.getMessage("help-ecode-create"));
                     return true;
                 }
-                String codeStr = args[1];
-                int uses = Integer.parseInt(args[2]);
-                String command = args[3];
-                String perm = args[4];
+                String displayName = args[1];
+                String generatedCode = plugin.getCodeManager().generateRandomCode(8);
 
-                CodeModel code = new CodeModel(codeStr, codeStr, perm, command, uses);
-                plugin.getCodeManager().saveCode(code, null);
-                sender.sendMessage(plugin.getMessage("code-created").replace("%code%", codeStr));
+                CodeModel newCode = new CodeModel(generatedCode, displayName, "codes.use.default", "[console] give %player% diamond 1", 10);
+                plugin.getCodeManager().saveCode(newCode, null);
+
+                sender.sendMessage(plugin.getMessage("code-created").replace("%code%", displayName));
+
+                if (sender instanceof Player player) {
+                    plugin.getGuiManager().openEditorGui(player, newCode);
+                }
                 return true;
             }
 
             if (args[0].equalsIgnoreCase("delete")) {
                 if (args.length < 2) {
-                    sender.sendMessage("Použití: /ecode delete <kod>");
+                    sender.sendMessage(plugin.getMessage("help-ecode-delete"));
                     return true;
                 }
                 CodeModel code = plugin.getCodeManager().getCode(args[1]);
@@ -86,7 +90,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
             if (args[0].equalsIgnoreCase("edit")) {
                 if (args.length < 4) {
-                    sender.sendMessage("Použití: /ecode edit <kod> <name|permission|uses-single|uses-global|refresh> <hodnota>");
+                    sender.sendMessage(plugin.getMessage("help-ecode-edit"));
                     return true;
                 }
                 CodeModel code = plugin.getCodeManager().getCode(args[1]);
@@ -106,7 +110,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     case "uses-global" -> code.setUsesGlobal(Integer.parseInt(value));
                     case "refresh" -> code.setRefresh(Boolean.parseBoolean(value));
                     default -> {
-                        sender.sendMessage("Neznámé pole ke změně.");
+                        sender.sendMessage(plugin.getMessage("help-ecode-edit"));
                         return true;
                     }
                 }
@@ -117,9 +121,16 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         }
 
         if (name.equals("acode")) {
-            if (args.length == 0) return true;
+            if (args.length == 0) {
+                sender.sendMessage(plugin.getMessage("help-acode"));
+                return true;
+            }
 
             if (args[0].equalsIgnoreCase("reload")) {
+                if (!sender.hasPermission("codes.admin.reload")) {
+                    sender.sendMessage(plugin.getMessage("no-permission"));
+                    return true;
+                }
                 plugin.reloadConfig();
                 plugin.getCodeManager().loadAllCodes();
                 sender.sendMessage(plugin.getMessage("plugin-reloaded"));
@@ -127,16 +138,47 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             }
 
             if (args[0].equalsIgnoreCase("list")) {
-                sender.sendMessage(plugin.getMessage("prefix") + "&aAktivní kódy:");
+                if (!sender.hasPermission("codes.admin.list")) {
+                    sender.sendMessage(plugin.getMessage("no-permission"));
+                    return true;
+                }
+                sender.sendMessage(plugin.getMessage("list-header"));
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-                    sender.sendMessage(" &8- &e" + code.getCode() + " &7(" + code.getDisplayName() + "&7)");
+                    String line = plugin.getConfig().getString("messages.list-format", "&8- &e%code% &7(&f%display%&7)")
+                            .replace("%code%", code.getCode())
+                            .replace("%display%", code.getDisplayName());
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
+                }
+                return true;
+            }
+
+            if (args[0].equalsIgnoreCase("getcode")) {
+                if (!sender.hasPermission("codes.admin.getcode")) {
+                    sender.sendMessage(plugin.getMessage("no-permission"));
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage(plugin.getMessage("help-acode-getcode"));
+                    return true;
+                }
+                CodeModel code = plugin.getCodeManager().getCode(args[1]);
+                if (code != null) {
+                    sender.sendMessage(plugin.getMessage("getcode-success")
+                            .replace("%display%", code.getDisplayName())
+                            .replace("%code%", code.getCode()));
+                } else {
+                    sender.sendMessage(plugin.getMessage("code-not-found"));
                 }
                 return true;
             }
 
             if (args[0].equalsIgnoreCase("reset")) {
+                if (!sender.hasPermission("codes.admin.reset")) {
+                    sender.sendMessage(plugin.getMessage("no-permission"));
+                    return true;
+                }
                 if (args.length < 3) {
-                    sender.sendMessage("Použití: /acode reset <hráč> <kod>");
+                    sender.sendMessage(plugin.getMessage("help-acode-reset"));
                     return true;
                 }
                 String targetPlayerName = args[1];
@@ -145,7 +187,8 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(targetPlayerName);
                     String uuidStr = offPlayer.getUniqueId().toString().toLowerCase();
 
-                    boolean removed = code.getUsedPlayers().remove(uuidStr) || code.getUsedPlayers().remove(targetPlayerName.toLowerCase());
+                    code.getUsedPlayers().remove(uuidStr);
+                    code.getUsedPlayers().remove(targetPlayerName.toLowerCase());
 
                     if (offPlayer.isOnline() && offPlayer.getPlayer() != null && offPlayer.getPlayer().getAddress() != null) {
                         String ip = offPlayer.getPlayer().getAddress().getHostString();
@@ -161,7 +204,14 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             }
 
             if (args[0].equalsIgnoreCase("availability")) {
-                if (args.length < 3) return true;
+                if (!sender.hasPermission("codes.admin.availability")) {
+                    sender.sendMessage(plugin.getMessage("no-permission"));
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage(plugin.getMessage("help-acode-availability"));
+                    return true;
+                }
                 String targetPlayerName = args[1];
                 CodeModel code = plugin.getCodeManager().getCode(args[2]);
                 if (code != null) {
@@ -245,7 +295,6 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         List<String> list = new ArrayList<>();
         String name = cmd.getName().toLowerCase();
 
-        // /code nemá mít žadne doplnovani pro hrac
         if (name.equals("code")) {
             return list; 
         }
@@ -256,16 +305,21 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("edit"))) {
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
                     list.add(code.getCode());
+                    list.add(code.getCleanFileName());
                 }
             } else if (args.length == 3 && args[0].equalsIgnoreCase("edit")) {
                 list.addAll(List.of("name", "permission", "uses-single", "uses-global", "refresh"));
             }
         } else if (name.equals("acode")) {
             if (args.length == 1) {
-                list.addAll(List.of("reset", "reload", "list", "availability"));
+                list.addAll(List.of("reset", "reload", "list", "availability", "getcode"));
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("availability"))) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     list.add(p.getName());
+                }
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("getcode")) {
+                for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
+                    list.add(code.getCleanFileName());
                 }
             } else if (args.length == 3 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("availability"))) {
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
