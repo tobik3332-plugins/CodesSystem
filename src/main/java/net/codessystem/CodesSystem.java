@@ -50,8 +50,19 @@ public class CodesSystem extends JavaPlugin {
 
     public Component parseText(String input) {
         if (input == null) return Component.empty();
-        String translated = ChatColor.translateAlternateColorCodes('&', input);
-        return LegacyComponentSerializer.legacySection().deserialize(translated);
+        
+        // 1. Zpracování klasických & kódů
+        String colorized = ChatColor.translateAlternateColorCodes('&', input);
+        
+        // 2. Pokud obsahuje MiniMessage tagy (např. <hover> nebo <click>), převedeme přes MiniMessage
+        if (colorized.contains("<") && colorized.contains(">")) {
+            try {
+                // Převod § na legacy formát pro kompatibilitu s MiniMessage
+                return miniMessage.deserialize(colorized);
+            } catch (Exception ignored) {}
+        }
+
+        return LegacyComponentSerializer.legacySection().deserialize(colorized);
     }
 
     public Component getMessageComponent(String path) {
@@ -62,15 +73,6 @@ public class CodesSystem extends JavaPlugin {
             msg = msg.replace("%prefix%", prefix);
         }
 
-        String translated = ChatColor.translateAlternateColorCodes('&', msg);
-
-        // Bezpečné parsování: Podpora pro MiniMessage tagy, pokud jsou v textu přítomny, jinak fallback na legacy
-        try {
-            if (translated.contains("<") && translated.contains(">")) {
-                return miniMessage.deserialize(translated);
-            }
-        } catch (Exception ignored) {}
-
-        return parseText(translated);
+        return parseText(msg);
     }
 }
