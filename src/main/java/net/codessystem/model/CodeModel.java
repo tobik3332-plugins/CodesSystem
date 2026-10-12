@@ -1,5 +1,7 @@
 package net.codessystem.model;
 
+import org.bukkit.Material;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class CodeModel {
     private int usesGlobal;
     private int currentGlobalUses;
     private boolean refresh;
+    private String iconMaterial;
     private List<String> usedPlayers;
     private List<String> usedIps;
 
@@ -26,6 +29,7 @@ public class CodeModel {
         this.usesGlobal = usesGlobal;
         this.currentGlobalUses = 0;
         this.refresh = false;
+        this.iconMaterial = "PAPER";
         this.usedPlayers = new ArrayList<>();
         this.usedIps = new ArrayList<>();
     }
@@ -60,6 +64,18 @@ public class CodeModel {
 
     public boolean isRefresh() { return refresh; }
     public void setRefresh(boolean refresh) { this.refresh = refresh; }
+
+    public String getIconMaterial() { return iconMaterial != null ? iconMaterial : "PAPER"; }
+    public void setIconMaterial(String iconMaterial) { this.iconMaterial = iconMaterial; }
+
+    public Material getMaterial() {
+        try {
+            Material mat = Material.matchMaterial(iconMaterial);
+            return mat != null ? mat : Material.PAPER;
+        } catch (Exception e) {
+            return Material.PAPER;
+        }
+    }
 
     public List<String> getUsedPlayers() { return usedPlayers; }
     public void setUsedPlayers(List<String> usedPlayers) { this.usedPlayers = usedPlayers; }
