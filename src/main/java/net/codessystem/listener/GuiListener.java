@@ -89,7 +89,16 @@ public class GuiListener implements Listener {
                         String codeStr = plain.replace("Kód: ", "").trim();
                         CodeModel code = plugin.getCodeManager().getCode(codeStr);
                         if (code != null) {
-                            plugin.getGuiManager().openEditorGui(player, code);
+                            if (event.isRightClick()) {
+                                code.setCurrentGlobalUses(0);
+                                code.getUsedPlayers().clear();
+                                code.getUsedIps().clear();
+                                plugin.getCodeManager().saveCode(code, code.getCleanFileName());
+                                player.sendMessage(plugin.parseText("&aKód byl úspěšně resetován!"));
+                                plugin.getGuiManager().openExhaustedGui(player);
+                            } else {
+                                plugin.getGuiManager().openEditorGui(player, code);
+                            }
                         }
                         break;
                     }
@@ -167,6 +176,18 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
+            } else if (slot == config.getInt("gui.editor.items.icon.slot", 16)) {
+                player.closeInventory();
+                plugin.getChatInputListener().awaitInput(player, input -> {
+                    if (!input.equalsIgnoreCase("cancel")) {
+                        Material mat = Material.matchMaterial(input);
+                        if (mat != null) {
+                            code.setIconMaterial(mat.name());
+                            plugin.getCodeManager().saveCode(code, oldCleanName);
+                        }
+                    }
+                    plugin.getGuiManager().openEditorGui(player, code);
+                });
             } else if (slot == config.getInt("gui.editor.items.register.slot", 22)) {
                 plugin.getCodeManager().saveCode(code, oldCleanName);
                 plugin.getGuiManager().openMainGui(player);
@@ -180,7 +201,7 @@ public class GuiListener implements Listener {
     public void promptDeleteConfirmation(Player player, CodeModel code, boolean fromGui) {
         String msg = plugin.getConfig().getString("messages.delete-confirm-prompt", "")
                 .replace("%code%", code.getActiveCode());
-        player.sendMessage(plugin.getMiniMessage().deserialize(msg));
+        player.sendMessage(plugin.parseText(msg));
 
         plugin.getChatInputListener().awaitInput(player, input -> {
             if (input.equalsIgnoreCase("accept")) {
