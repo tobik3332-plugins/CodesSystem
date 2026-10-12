@@ -35,23 +35,19 @@ messages:
   input-prompt: "%prefix%&aZadej novou hodnotu do chatu (nebo napiš &ecancel &apro zrušení):"
   input-cancelled: "%prefix%&eZadávání bylo zrušeno."
 
-  # Zprávy pro /acode availability (používají %display% namísto %code%)
   availability-used: "%prefix%&aHráč &e%player% &aJIŽ uplatnil kód pro &e%display%&a."
   availability-not-used: "%prefix%&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód pro &e%display%&a."
   
-  # Příkaz /acode getcode (s kliknutelným zkopírováním)
-  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: <hover:show_text:'&eKlikni pro zkopírování'><click:copy_to_clipboard:'%code%'>&b%code%</click></hover>"
+  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: "
 
-  # Výpis seznamu kódů (/acode list)
   list-header: "%prefix%&aSeznam aktivních kódů:"
   list-format: "&8- &e%code% &7(&f%display%&7)"
 
-  # Nápovědy příkazů (Help Messages)
   help-code: "%prefix%&7Použití: &f/code <code>"
   help-ecode: "%prefix%&7Použití: &f/ecode <create|delete|edit>"
   help-ecode-create: "%prefix%&7Použití: &f/ecode create <displayName>"
   help-ecode-delete: "%prefix%&7Použití: &f/ecode delete <code|displayName>"
-  help-ecode-edit: "%prefix%&7Použití: &f/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh|stable-code> <hodnota>"
+  help-ecode-edit: "%prefix%&7Použití: &f/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh|stable-code|icon> <hodnota>"
   help-acode: "%prefix%&7Použití: &f/acode <reset|reload|list|availability|getcode>"
   help-acode-reset: "%prefix%&7Použití: &f/acode reset <hráč> <displayName|kod>"
   help-acode-getcode: "%prefix%&7Použití: &f/acode getcode <displayName>"
@@ -85,6 +81,13 @@ gui:
       name: "&cZpět"
       lore:
         - "&7Návrat do hlavního menu"
+    reset-button:
+      slot: 48
+      material: "NETHER_STAR"
+      name: "&aResetovat Kód"
+      lore:
+        - "&7Kliknutím resetuješ tento kód"
+        - "&7a vrátíš ho do oběhu."
 
   editor:
     title: "&8Úprava Kódu: %code%"
@@ -118,15 +121,16 @@ gui:
       uses-single:
         slot: 12
         material: "PLAYER_HEAD"
-        title: "&eLimit na IP"
+        title: "&eLimit na IP (-1 = ∞)"
         lore:
           - "&7Aktuální limit: &f%value%"
           - ""
           - "&eKlikni pro změnu limitu na IP"
       uses-global:
-        slot: 13
-        material: "BEACON"
-        title: "&eGlobální Limit"
+        slot:
+          slot: 13
+          material: "BEACON"
+        title: "&eGlobální Limit (-1 = ∞)"
         lore:
           - "&7Aktuální: &f%used% / %max%"
           - ""
@@ -148,6 +152,14 @@ gui:
           - ""
           - "&7Použije se pokud je refresh &ffalse"
           - "&eKlikni pro změnu stálého kódu"
+      icon:
+        slot: 16
+        material: "ITEM_FRAME"
+        title: "&eIkona v GUI (Icon)"
+        lore:
+          - "&7Aktuální: &f%value%"
+          - ""
+          - "&eKlikni pro změnu materiálu ikony"
       register:
         slot: 22
         material: "SLIME_BALL"
