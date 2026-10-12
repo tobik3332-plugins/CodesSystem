@@ -2,8 +2,8 @@ package net.codessystem.gui;
 
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -24,7 +24,7 @@ public class GuiManager {
 
     public void openMainGui(Player player) {
         FileConfiguration config = plugin.getConfig();
-        String title = color(config.getString("gui.main.title", "&8Správa Kódů"));
+        Component title = plugin.parseText(config.getString("gui.main.title", "Správa Kódů"));
         int size = config.getInt("gui.main.size", 54);
 
         Inventory inv = Bukkit.createInventory(null, size, title);
@@ -36,34 +36,32 @@ public class GuiManager {
 
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(color(code.getDisplayName()));
+            meta.displayName(plugin.parseText(code.getDisplayName()));
 
-            List<String> lore = new ArrayList<>();
-            lore.add(color("&7Kód: &e" + code.getCode()));
-            lore.add(color("&7Permise: &f" + code.getPermission()));
-            lore.add(color("&7Příkaz: &f" + code.getCommand()));
-            lore.add(color("&7Globálně: &f" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
-            lore.add(color("&7Refresh: &f" + code.isRefresh()));
-            lore.add("");
-            lore.add(color("&eKlikni pro úpravu kódu."));
-            meta.setLore(lore);
+            List<Component> lore = new ArrayList<>();
+            lore.add(plugin.parseText("&7Kód: &e" + code.getActiveCode()));
+            lore.add(plugin.parseText("&7Permise: &f" + code.getPermission()));
+            lore.add(plugin.parseText("&7Příkaz: &f" + code.getCommand()));
+            lore.add(plugin.parseText("&7Globálně: &f" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
+            lore.add(plugin.parseText("&7Refresh: &f" + code.isRefresh()));
+            lore.add(Component.empty());
+            lore.add(plugin.parseText("&eKlikni pro úpravu kódu."));
+            meta.lore(lore);
             item.setItemMeta(meta);
 
             inv.setItem(slot++, item);
         }
 
-        // Tlačítko Create
         int createSlot = config.getInt("gui.main.create-button.slot", 48);
         Material createMat = Material.valueOf(config.getString("gui.main.create-button.material", "EMERALD_BLOCK"));
-        String createName = color(config.getString("gui.main.create-button.name", "&a+ Vytvořit Nový Kód"));
-        List<String> createLore = colorList(config.getStringList("gui.main.create-button.lore"));
+        String createName = config.getString("gui.main.create-button.name", "&a+ Vytvořit Nový Kód");
+        List<String> createLore = config.getStringList("gui.main.create-button.lore");
         inv.setItem(createSlot, createItem(createMat, createName, createLore));
 
-        // Tlačítko Exhausted
         int exhSlot = config.getInt("gui.main.exhausted-button.slot", 50);
         Material exhMat = Material.valueOf(config.getString("gui.main.exhausted-button.material", "REDSTONE_BLOCK"));
-        String exhName = color(config.getString("gui.main.exhausted-button.name", "&cVyčerpané Kódy"));
-        List<String> exhLore = colorList(config.getStringList("gui.main.exhausted-button.lore"));
+        String exhName = config.getString("gui.main.exhausted-button.name", "&cVyčerpané Kódy");
+        List<String> exhLore = config.getStringList("gui.main.exhausted-button.lore");
         inv.setItem(exhSlot, createItem(exhMat, exhName, exhLore));
 
         player.openInventory(inv);
@@ -71,7 +69,7 @@ public class GuiManager {
 
     public void openExhaustedGui(Player player) {
         FileConfiguration config = plugin.getConfig();
-        String title = color(config.getString("gui.exhausted.title", "&8Vyčerpané Kódy"));
+        Component title = plugin.parseText(config.getString("gui.exhausted.title", "Vyčerpané Kódy"));
         int size = config.getInt("gui.exhausted.size", 54);
 
         Inventory inv = Bukkit.createInventory(null, size, title);
@@ -83,14 +81,14 @@ public class GuiManager {
 
                 ItemStack item = new ItemStack(Material.STRUCTURE_VOID);
                 ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(color(code.getDisplayName()));
+                meta.displayName(plugin.parseText(code.getDisplayName()));
 
-                List<String> lore = new ArrayList<>();
-                lore.add(color("&7Kód: &e" + code.getCode()));
-                lore.add(color("&7Vyčerpáno: &c" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
-                lore.add("");
-                lore.add(color("&eKlikni pro úpravu/reset kódu."));
-                meta.setLore(lore);
+                List<Component> lore = new ArrayList<>();
+                lore.add(plugin.parseText("&7Kód: &e" + code.getActiveCode()));
+                lore.add(plugin.parseText("&7Vyčerpáno: &c" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
+                lore.add(Component.empty());
+                lore.add(plugin.parseText("&eKlikni pro úpravu/reset kódu."));
+                meta.lore(lore);
                 item.setItemMeta(meta);
 
                 inv.setItem(slot++, item);
@@ -99,8 +97,8 @@ public class GuiManager {
 
         int backSlot = config.getInt("gui.exhausted.back-button.slot", 49);
         Material backMat = Material.valueOf(config.getString("gui.exhausted.back-button.material", "BARRIER"));
-        String backName = color(config.getString("gui.exhausted.back-button.name", "&cZpět"));
-        List<String> backLore = colorList(config.getStringList("gui.exhausted.back-button.lore"));
+        String backName = config.getString("gui.exhausted.back-button.name", "&cZpět");
+        List<String> backLore = config.getStringList("gui.exhausted.back-button.lore");
         inv.setItem(backSlot, createItem(backMat, backName, backLore));
 
         player.openInventory(inv);
@@ -108,7 +106,8 @@ public class GuiManager {
 
     public void openEditorGui(Player player, CodeModel code) {
         FileConfiguration config = plugin.getConfig();
-        String title = color(config.getString("gui.editor.title", "&8Úprava Kódu: %code%").replace("%code%", code.getCode()));
+        String titleStr = config.getString("gui.editor.title", "Úprava Kódu: %code%").replace("%code%", code.getActiveCode());
+        Component title = plugin.parseText(titleStr);
         int size = config.getInt("gui.editor.size", 27);
 
         Inventory inv = Bukkit.createInventory(null, size, title);
@@ -119,6 +118,7 @@ public class GuiManager {
         setEditorItem(inv, config, "uses-single", String.valueOf(code.getUsesSingle()), code);
         setEditorItem(inv, config, "uses-global", "", code);
         setEditorItem(inv, config, "refresh", String.valueOf(code.isRefresh()), code);
+        setEditorItem(inv, config, "stable-code", code.getStableCode(), code);
         setEditorItem(inv, config, "register", "", code);
         setEditorItem(inv, config, "delete", "", code);
 
@@ -131,7 +131,7 @@ public class GuiManager {
 
         int slot = config.getInt(path + ".slot");
         Material mat = Material.valueOf(config.getString(path + ".material", "STONE"));
-        String title = color(config.getString(path + ".title", "&eItem"));
+        String title = config.getString(path + ".title", "Item");
         List<String> rawLore = config.getStringList(path + ".lore");
 
         List<String> lore = new ArrayList<>();
@@ -139,7 +139,7 @@ public class GuiManager {
             line = line.replace("%value%", value)
                     .replace("%used%", String.valueOf(code.getCurrentGlobalUses()))
                     .replace("%max%", String.valueOf(code.getUsesGlobal()));
-            lore.add(color(line));
+            lore.add(line);
         }
 
         inv.setItem(slot, createItem(mat, title, lore));
@@ -148,22 +148,14 @@ public class GuiManager {
     private ItemStack createItem(Material mat, String name, List<String> lore) {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(lore);
+        meta.displayName(plugin.parseText(name));
+
+        List<Component> compLore = new ArrayList<>();
+        for (String line : lore) {
+            compLore.add(plugin.parseText(line));
+        }
+        meta.lore(compLore);
         item.setItemMeta(meta);
         return item;
-    }
-
-    public String color(String msg) {
-        if (msg == null) return "";
-        return ChatColor.translateAlternateColorCodes('&', msg);
-    }
-
-    public List<String> colorList(List<String> list) {
-        List<String> colored = new ArrayList<>();
-        for (String s : list) {
-            colored.add(color(s));
-        }
-        return colored;
     }
 }
