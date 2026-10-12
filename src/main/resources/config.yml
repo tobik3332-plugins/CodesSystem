@@ -34,11 +34,13 @@ messages:
   delete-timeout: "%prefix%&cČasový limit pro potvrzení smazání vypršel."
   input-prompt: "%prefix%&aZadej novou hodnotu do chatu (nebo napiš &ecancel &apro zrušení):"
   input-cancelled: "%prefix%&eZadávání bylo zrušeno."
-  availability-used: "%prefix%&aHráč &e%player% &aJIŽ uplatnil kód &e%code%&a."
-  availability-not-used: "%prefix%&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód &e%code%&a."
+
+  # Zprávy pro /acode availability (používají %display% namísto %code%)
+  availability-used: "%prefix%&aHráč &e%player% &aJIŽ uplatnil kód pro &e%display%&a."
+  availability-not-used: "%prefix%&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód pro &e%display%&a."
   
-  # Text příkazu /acode getcode (kliknutím zkopíruje kód do schránky):
-  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: <hover:show_text:'&eKlikni pro zkopíruání'><click:copy_to_clipboard:'%code%'>&b%code%</click></hover>"
+  # Příkaz /acode getcode (s kliknutelným zkopírováním)
+  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: <hover:show_text:'&eKlikni pro zkopírování'><click:copy_to_clipboard:'%code%'>&b%code%</click></hover>"
 
   # Výpis seznamu kódů (/acode list)
   list-header: "%prefix%&aSeznam aktivních kódů:"
@@ -51,9 +53,9 @@ messages:
   help-ecode-delete: "%prefix%&7Použití: &f/ecode delete <code|displayName>"
   help-ecode-edit: "%prefix%&7Použití: &f/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh|stable-code> <hodnota>"
   help-acode: "%prefix%&7Použití: &f/acode <reset|reload|list|availability|getcode>"
-  help-acode-reset: "%prefix%&7Použití: &f/acode reset <hráč> <kod>"
+  help-acode-reset: "%prefix%&7Použití: &f/acode reset <hráč> <displayName|kod>"
   help-acode-getcode: "%prefix%&7Použití: &f/acode getcode <displayName>"
-  help-acode-availability: "%prefix%&7Použití: &f/acode availability <hráč> <kod>"
+  help-acode-availability: "%prefix%&7Použití: &f/acode availability <hráč> <displayName>"
 
 gui:
   main:
