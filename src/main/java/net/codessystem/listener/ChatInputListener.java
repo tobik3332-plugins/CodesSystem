@@ -1,7 +1,6 @@
 package net.codessystem.listener;
 
 import net.codessystem.CodesSystem;
-import net.codessystem.model.CodeModel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +24,7 @@ public class ChatInputListener implements Listener {
 
     public void awaitInput(Player player, Consumer<String> callback) {
         pendingInputs.put(player.getUniqueId(), callback);
-        player.sendMessage(plugin.getMessage("input-prompt"));
+        player.sendMessage(plugin.getMessageComponent("input-prompt"));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
