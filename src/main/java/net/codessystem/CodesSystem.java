@@ -6,6 +6,7 @@ import net.codessystem.listener.ChatInputListener;
 import net.codessystem.listener.GuiListener;
 import net.codessystem.manager.CodeManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
@@ -56,17 +57,9 @@ public class CodesSystem extends JavaPlugin {
             input = input.replace("%prefix%", prefix);
         }
 
-        // Pokud řetězec obsahuje MiniMessage tagy (<click>, <hover>, atd.)
-        if (input.contains("<") && input.contains(">")) {
-            try {
-                // Převod & barev na § a následně parsování s MiniMessage kompatibilitou
-                String legacyFormattted = ChatColor.translateAlternateColorCodes('&', input);
-                return miniMessage.deserialize(legacyFormattted);
-            } catch (Exception ignored) {}
-        }
-
         String colorized = ChatColor.translateAlternateColorCodes('&', input);
-        return LegacyComponentSerializer.legacySection().deserialize(colorized);
+        Component comp = LegacyComponentSerializer.legacySection().deserialize(colorized);
+        return comp.decoration(TextDecoration.ITALIC, false);
     }
 
     public Component getMessageComponent(String path) {
