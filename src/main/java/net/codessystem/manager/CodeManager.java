@@ -49,8 +49,14 @@ public class CodeManager {
             code.setUsedPlayers(config.getStringList("usedPlayers"));
             code.setUsedIps(config.getStringList("usedIps"));
 
-            codesMap.put(code.getActiveCode().toLowerCase(), code);
+            registerCodeInMap(code);
         }
+    }
+
+    public void registerCodeInMap(CodeModel code) {
+        codesMap.put(code.getActiveCode().toLowerCase(), code);
+        codesMap.put(code.getCode().toLowerCase(), code);
+        codesMap.put(code.getStableCode().toLowerCase(), code);
     }
 
     public void saveCode(CodeModel code, String oldCleanFileName) {
@@ -81,7 +87,7 @@ public class CodeManager {
         }
 
         codesMap.values().removeIf(c -> c.getCleanFileName().equalsIgnoreCase(code.getCleanFileName()));
-        codesMap.put(code.getActiveCode().toLowerCase(), code);
+        registerCodeInMap(code);
     }
 
     public void refreshCodeString(CodeModel code) {
@@ -104,13 +110,17 @@ public class CodeManager {
         if (file.exists()) {
             file.delete();
         }
-        codesMap.remove(code.getActiveCode().toLowerCase());
+        codesMap.values().removeIf(c -> c.getCleanFileName().equalsIgnoreCase(code.getCleanFileName()));
         return true;
     }
 
     public CodeModel getCode(String query) {
         if (query == null) return null;
         String lowerQuery = query.toLowerCase();
+
+        if (codesMap.containsKey(lowerQuery)) {
+            return codesMap.get(lowerQuery);
+        }
 
         for (CodeModel code : codesMap.values()) {
             if (code.getActiveCode().equalsIgnoreCase(query) ||
@@ -127,7 +137,8 @@ public class CodeManager {
     }
 
     public Collection<CodeModel> getAllCodes() {
-        return codesMap.values();
+        Set<CodeModel> uniqueCodes = new HashSet<>(codesMap.values());
+        return uniqueCodes;
     }
 
     public String generateRandomCode(int length) {
