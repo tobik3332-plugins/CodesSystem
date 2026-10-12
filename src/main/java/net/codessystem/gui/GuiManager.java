@@ -31,10 +31,10 @@ public class GuiManager {
 
         int slot = 0;
         for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-            if (code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) continue;
+            if (code.getUsesGlobal() != -1 && code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) continue;
             if (slot >= size - 9) break;
 
-            ItemStack item = new ItemStack(Material.PAPER);
+            ItemStack item = new ItemStack(code.getMaterial());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(plugin.parseText(code.getDisplayName()));
 
@@ -42,7 +42,8 @@ public class GuiManager {
             lore.add(plugin.parseText("&7Kód: &e" + code.getActiveCode()));
             lore.add(plugin.parseText("&7Permise: &f" + code.getPermission()));
             lore.add(plugin.parseText("&7Příkaz: &f" + code.getCommand()));
-            lore.add(plugin.parseText("&7Globálně: &f" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
+            String globalLimitStr = code.getUsesGlobal() == -1 ? "∞" : String.valueOf(code.getUsesGlobal());
+            lore.add(plugin.parseText("&7Globálně: &f" + code.getCurrentGlobalUses() + "/" + globalLimitStr));
             lore.add(plugin.parseText("&7Refresh: &f" + code.isRefresh()));
             lore.add(Component.empty());
             lore.add(plugin.parseText("&eKlikni pro úpravu kódu."));
@@ -76,10 +77,10 @@ public class GuiManager {
 
         int slot = 0;
         for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-            if (code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) {
+            if (code.getUsesGlobal() != -1 && code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) {
                 if (slot >= size - 9) break;
 
-                ItemStack item = new ItemStack(Material.STRUCTURE_VOID);
+                ItemStack item = new ItemStack(code.getMaterial());
                 ItemMeta meta = item.getItemMeta();
                 meta.displayName(plugin.parseText(code.getDisplayName()));
 
@@ -87,7 +88,8 @@ public class GuiManager {
                 lore.add(plugin.parseText("&7Kód: &e" + code.getActiveCode()));
                 lore.add(plugin.parseText("&7Vyčerpáno: &c" + code.getCurrentGlobalUses() + "/" + code.getUsesGlobal()));
                 lore.add(Component.empty());
-                lore.add(plugin.parseText("&eKlikni pro úpravu/reset kódu."));
+                lore.add(plugin.parseText("&aLevý klik: &7Úprava kódu"));
+                lore.add(plugin.parseText("&ePravý klik: &7Resetovat kód"));
                 meta.lore(lore);
                 item.setItemMeta(meta);
 
@@ -119,6 +121,7 @@ public class GuiManager {
         setEditorItem(inv, config, "uses-global", "", code);
         setEditorItem(inv, config, "refresh", String.valueOf(code.isRefresh()), code);
         setEditorItem(inv, config, "stable-code", code.getStableCode(), code);
+        setEditorItem(inv, config, "icon", code.getIconMaterial(), code);
         setEditorItem(inv, config, "register", "", code);
         setEditorItem(inv, config, "delete", "", code);
 
@@ -130,7 +133,13 @@ public class GuiManager {
         if (!config.contains(path)) return;
 
         int slot = config.getInt(path + ".slot");
-        Material mat = Material.valueOf(config.getString(path + ".material", "STONE"));
+        Material mat;
+        try {
+            mat = Material.valueOf(config.getString(path + ".material", "STONE"));
+        } catch (Exception e) {
+            mat = Material.STONE;
+        }
+
         String title = config.getString(path + ".title", "Item");
         List<String> rawLore = config.getStringList(path + ".lore");
 
@@ -138,7 +147,7 @@ public class GuiManager {
         for (String line : rawLore) {
             line = line.replace("%value%", value)
                     .replace("%used%", String.valueOf(code.getCurrentGlobalUses()))
-                    .replace("%max%", String.valueOf(code.getUsesGlobal()));
+                    .replace("%max%", code.getUsesGlobal() == -1 ? "∞" : String.valueOf(code.getUsesGlobal()));
             lore.add(line);
         }
 
