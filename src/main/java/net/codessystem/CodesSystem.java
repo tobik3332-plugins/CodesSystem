@@ -5,6 +5,9 @@ import net.codessystem.gui.GuiManager;
 import net.codessystem.listener.ChatInputListener;
 import net.codessystem.listener.GuiListener;
 import net.codessystem.manager.CodeManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,11 +17,13 @@ public class CodesSystem extends JavaPlugin {
     private GuiManager guiManager;
     private ChatInputListener chatInputListener;
     private GuiListener guiListener;
+    private MiniMessage miniMessage;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
+        this.miniMessage = MiniMessage.miniMessage();
         this.codeManager = new CodeManager(this);
         this.guiManager = new GuiManager(this);
         this.chatInputListener = new ChatInputListener(this);
@@ -41,15 +46,24 @@ public class CodesSystem extends JavaPlugin {
     public GuiManager getGuiManager() { return guiManager; }
     public ChatInputListener getChatInputListener() { return chatInputListener; }
     public GuiListener getGuiListener() { return guiListener; }
+    public MiniMessage getMiniMessage() { return miniMessage; }
 
-    public String getMessage(String path) {
+    public Component parseText(String input) {
+        if (input == null) return Component.empty();
+        String translated = ChatColor.translateAlternateColorCodes('&', input);
+        return LegacyComponentSerializer.legacySection().deserialize(translated);
+    }
+
+    public Component getMessageComponent(String path) {
         String msg = getConfig().getString("messages." + path, "");
         String prefix = getConfig().getString("messages.prefix", "");
-        
+
         if (msg.contains("%prefix%")) {
             msg = msg.replace("%prefix%", prefix);
         }
-        
-        return ChatColor.translateAlternateColorCodes('&', msg);
+
+        String legacyTranslated = ChatColor.translateAlternateColorCodes('&', msg);
+
+        return miniMessage.deserialize(legacyTranslated);
     }
 }
