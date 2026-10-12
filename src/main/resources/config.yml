@@ -10,7 +10,7 @@ messages:
   code-ip-limit: "%prefix%&cTento kód byl z tvojí IP adresy již vyčerpán."
   code-global-limit: "%prefix%&cTento kód již dosáhl svého maximálního počtu globálních použití."
   code-success: "%prefix%&aKód &e%code% &abyl úspěšně uplatněn!"
-  code-created: "%prefix%&aKód &e%code% &abyl úspěšně vytvořen!"
+  code-created: "%prefix%&aKód &e%code% &abyl úspěšně vytvořen! Otevírám GUI..."
   code-deleted: "%prefix%&cKód &e%code% &abyl úspěšně smazán."
   code-edited: "%prefix%&aHodnota &e%field% &apro kód &e%code% &abyla upravena na: &f%value%"
   code-reset-success: "%prefix%&aKód &e%code% &abyl úspěšně resetován pro hráče &e%player%&a."
@@ -22,6 +22,22 @@ messages:
   input-cancelled: "%prefix%&eZadávání bylo zrušeno."
   availability-used: "%prefix%&aHráč &e%player% &aJIŽ uplatnil kód &e%code%&a."
   availability-not-used: "%prefix%&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód &e%code%&a."
+  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: &b%code%"
+
+  # Výpis seznamu kódů (/acode list)
+  list-header: "%prefix%&aSeznam aktivních kódů:"
+  list-format: "&8- &e%code% &7(&f%display%&7)"
+
+  # Nápovědy příkazů (Help Messages)
+  help-code: "%prefix%&7Použití: &f/code <code>"
+  help-ecode: "%prefix%&7Použití: &f/ecode <create|delete|edit>"
+  help-ecode-create: "%prefix%&7Použití: &f/ecode create <displayName>"
+  help-ecode-delete: "%prefix%&7Použití: &f/ecode delete <code|displayName>"
+  help-ecode-edit: "%prefix%&7Použití: &f/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh> <hodnota>"
+  help-acode: "%prefix%&7Použití: &f/acode <reset|reload|list|availability|getcode>"
+  help-acode-reset: "%prefix%&7Použití: &f/acode reset <hráč> <kod>"
+  help-acode-getcode: "%prefix%&7Použití: &f/acode getcode <displayName>"
+  help-acode-availability: "%prefix%&7Použití: &f/acode availability <hráč> <kod>"
 
 gui:
   main:
