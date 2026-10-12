@@ -16,7 +16,7 @@ commands:
     usage: /codes
   ecode:
     description: Edit and manage reward codes.
-    permission: codes.admin.gui
+    permission: codes.admin.edit-cmds
     usage: /ecode <create|delete|edit>
   acode:
     description: Admin commands for codes system.
@@ -29,6 +29,8 @@ permissions:
   codes.use.default:
     default: true
   codes.admin.gui:
+    default: op
+  codes.admin.edit-cmds:
     default: op
   codes.admin.reset:
     default: op
