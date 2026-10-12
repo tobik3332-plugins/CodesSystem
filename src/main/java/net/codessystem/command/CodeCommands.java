@@ -2,7 +2,12 @@ package net.codessystem.command;
 
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -38,9 +43,9 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         if (name.equals("codes")) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Tento příkaz je pouze pro hráče.");
-                return true;
+            } else {
+                plugin.getGuiManager().openMainGui(player);
             }
-            plugin.getGuiManager().openMainGui(player);
             return true;
         }
 
@@ -111,6 +116,15 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     case "uses-global" -> code.setUsesGlobal(Integer.parseInt(value));
                     case "refresh" -> code.setRefresh(Boolean.parseBoolean(value));
                     case "stable-code" -> code.setStableCode(value);
+                    case "icon" -> {
+                        Material mat = Material.matchMaterial(value);
+                        if (mat != null) {
+                            code.setIconMaterial(mat.name());
+                        } else {
+                            sender.sendMessage(plugin.parseText("&cNeznámý materiál!"));
+                            return true;
+                        }
+                    }
                     default -> {
                         sender.sendMessage(plugin.getMessageComponent("help-ecode-edit"));
                         return true;
@@ -171,10 +185,16 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 CodeModel code = plugin.getCodeManager().getCode(args[1]);
                 if (code != null) {
                     String rawMsg = plugin.getConfig().getString("messages.getcode-success", "")
-                            .replace("%display%", code.getDisplayName())
-                            .replace("%code%", code.getActiveCode());
+                            .replace("%display%", code.getDisplayName());
 
-                    sender.sendMessage(plugin.parseText(rawMsg));
+                    Component prefixComp = plugin.parseText(plugin.getConfig().getString("messages.prefix", ""));
+                    Component baseMsg = plugin.parseText(rawMsg);
+                    
+                    Component codeComp = Component.text(code.getActiveCode(), NamedTextColor.AQUA)
+                            .clickEvent(ClickEvent.copyToClipboard(code.getActiveCode()))
+                            .hoverEvent(HoverEvent.showText(plugin.parseText("&eKlikni pro zkopírování")));
+
+                    sender.sendMessage(prefixComp.append(baseMsg).append(codeComp));
                 } else {
                     sender.sendMessage(plugin.getMessageComponent("code-not-found"));
                 }
@@ -270,13 +290,15 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         String ip = player.getAddress() != null ? player.getAddress().getHostString() : "unknown";
         String playerUUID = player.getUniqueId().toString().toLowerCase();
 
-        long ipUses = code.getUsedIps().stream().filter(i -> i.equalsIgnoreCase(ip)).count();
-        if (ipUses >= code.getUsesSingle()) {
-            player.sendMessage(plugin.getMessageComponent("code-ip-limit"));
-            return;
+        if (code.getUsesSingle() != -1) {
+            long ipUses = code.getUsedIps().stream().filter(i -> i.equalsIgnoreCase(ip)).count();
+            if (ipUses >= code.getUsesSingle()) {
+                player.sendMessage(plugin.getMessageComponent("code-ip-limit"));
+                return;
+            }
         }
 
-        if (code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) {
+        if (code.getUsesGlobal() != -1 && code.getUsesGlobal() > 0 && code.getCurrentGlobalUses() >= code.getUsesGlobal()) {
             player.sendMessage(plugin.getMessageComponent("code-global-limit"));
             return;
         }
@@ -330,7 +352,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     list.add(code.getCleanFileName());
                 }
             } else if (args.length == 3 && args[0].equalsIgnoreCase("edit")) {
-                list.addAll(List.of("name", "permission", "uses-single", "uses-global", "refresh", "stable-code"));
+                list.addAll(List.of("name", "permission", "uses-single", "uses-global", "refresh", "stable-code", "icon"));
             }
         } else if (name.equals("acode")) {
             if (args.length == 1) {
