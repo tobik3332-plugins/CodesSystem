@@ -2,8 +2,8 @@ package net.codessystem.listener;
 
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -24,12 +24,12 @@ public class GuiListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        String title = event.getView().getTitle();
+        String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
         FileConfiguration config = plugin.getConfig();
 
-        String mainTitle = plugin.getGuiManager().color(config.getString("gui.main.title", "&8Správa Kódů"));
-        String exhTitle = plugin.getGuiManager().color(config.getString("gui.exhausted.title", "&8Vyčerpané Kódy"));
-        String editorTitlePrefix = plugin.getGuiManager().color(config.getString("gui.editor.title", "&8Úprava Kódu")).split("%code%")[0];
+        String mainTitle = PlainTextComponentSerializer.plainText().serialize(plugin.parseText(config.getString("gui.main.title", "Správa Kódů")));
+        String exhTitle = PlainTextComponentSerializer.plainText().serialize(plugin.parseText(config.getString("gui.exhausted.title", "Vyčerpané Kódy")));
+        String editorTitlePrefix = PlainTextComponentSerializer.plainText().serialize(plugin.parseText(config.getString("gui.editor.title", "Úprava Kódu"))).split("%code%")[0];
 
         if (title.contains(mainTitle)) {
             event.setCancelled(true);
@@ -42,12 +42,12 @@ public class GuiListener implements Listener {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (input.equalsIgnoreCase("cancel")) {
-                        player.sendMessage(plugin.getMessage("input-cancelled"));
+                        player.sendMessage(plugin.getMessageComponent("input-cancelled"));
                         plugin.getGuiManager().openMainGui(player);
                         return;
                     }
                     String generatedCode = plugin.getCodeManager().generateRandomCode(8);
-                    CodeModel newCode = new CodeModel(generatedCode, input, "codes.use.code", "[console] give %player% diamond 1", 10);
+                    CodeModel newCode = new CodeModel(generatedCode, input, "codes.use.default", "[console] give %player% diamond 1", 10);
                     plugin.getCodeManager().saveCode(newCode, null);
                     plugin.getGuiManager().openEditorGui(player, newCode);
                 });
@@ -60,8 +60,8 @@ public class GuiListener implements Listener {
             }
 
             if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
-                for (String line : item.getItemMeta().getLore()) {
-                    String plain = ChatColor.stripColor(line);
+                for (var lineComp : item.getItemMeta().lore()) {
+                    String plain = PlainTextComponentSerializer.plainText().serialize(lineComp);
                     if (plain.startsWith("Kód: ")) {
                         String codeStr = plain.replace("Kód: ", "").trim();
                         CodeModel code = plugin.getCodeManager().getCode(codeStr);
@@ -83,8 +83,8 @@ public class GuiListener implements Listener {
             }
 
             if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
-                for (String line : item.getItemMeta().getLore()) {
-                    String plain = ChatColor.stripColor(line);
+                for (var lineComp : item.getItemMeta().lore()) {
+                    String plain = PlainTextComponentSerializer.plainText().serialize(lineComp);
                     if (plain.startsWith("Kód: ")) {
                         String codeStr = plain.replace("Kód: ", "").trim();
                         CodeModel code = plugin.getCodeManager().getCode(codeStr);
@@ -99,13 +99,13 @@ public class GuiListener implements Listener {
             event.setCancelled(true);
             int slot = event.getSlot();
 
-            String codeStr = ChatColor.stripColor(title.substring(editorTitlePrefix.length())).trim();
+            String codeStr = title.substring(editorTitlePrefix.length()).trim();
             CodeModel code = plugin.getCodeManager().getCode(codeStr);
             if (code == null) return;
 
             String oldCleanName = code.getCleanFileName();
 
-            if (slot == config.getInt("gui.editor.items.name.slot", 10)) {
+            if (slot == config.getInt("gui.editor.items.name.slot", 9)) {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (!input.equalsIgnoreCase("cancel")) {
@@ -114,7 +114,7 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
-            } else if (slot == config.getInt("gui.editor.items.permission.slot", 11)) {
+            } else if (slot == config.getInt("gui.editor.items.permission.slot", 10)) {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (!input.equalsIgnoreCase("cancel")) {
@@ -123,7 +123,7 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
-            } else if (slot == config.getInt("gui.editor.items.command.slot", 12)) {
+            } else if (slot == config.getInt("gui.editor.items.command.slot", 11)) {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (!input.equalsIgnoreCase("cancel")) {
@@ -132,7 +132,7 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
-            } else if (slot == config.getInt("gui.editor.items.uses-single.slot", 13)) {
+            } else if (slot == config.getInt("gui.editor.items.uses-single.slot", 12)) {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (!input.equalsIgnoreCase("cancel")) {
@@ -143,7 +143,7 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
-            } else if (slot == config.getInt("gui.editor.items.uses-global.slot", 14)) {
+            } else if (slot == config.getInt("gui.editor.items.uses-global.slot", 13)) {
                 player.closeInventory();
                 plugin.getChatInputListener().awaitInput(player, input -> {
                     if (!input.equalsIgnoreCase("cancel")) {
@@ -154,10 +154,19 @@ public class GuiListener implements Listener {
                     }
                     plugin.getGuiManager().openEditorGui(player, code);
                 });
-            } else if (slot == config.getInt("gui.editor.items.refresh.slot", 15)) {
+            } else if (slot == config.getInt("gui.editor.items.refresh.slot", 14)) {
                 code.setRefresh(!code.isRefresh());
                 plugin.getCodeManager().saveCode(code, oldCleanName);
                 plugin.getGuiManager().openEditorGui(player, code);
+            } else if (slot == config.getInt("gui.editor.items.stable-code.slot", 15)) {
+                player.closeInventory();
+                plugin.getChatInputListener().awaitInput(player, input -> {
+                    if (!input.equalsIgnoreCase("cancel")) {
+                        code.setStableCode(input);
+                        plugin.getCodeManager().saveCode(code, oldCleanName);
+                    }
+                    plugin.getGuiManager().openEditorGui(player, code);
+                });
             } else if (slot == config.getInt("gui.editor.items.register.slot", 22)) {
                 plugin.getCodeManager().saveCode(code, oldCleanName);
                 plugin.getGuiManager().openMainGui(player);
@@ -169,17 +178,19 @@ public class GuiListener implements Listener {
     }
 
     public void promptDeleteConfirmation(Player player, CodeModel code, boolean fromGui) {
-        player.sendMessage(plugin.getMessage("delete-confirm-prompt").replace("%code%", code.getCode()));
+        String msg = plugin.getConfig().getString("messages.delete-confirm-prompt", "")
+                .replace("%code%", code.getActiveCode());
+        player.sendMessage(plugin.getMiniMessage().deserialize(msg));
 
         plugin.getChatInputListener().awaitInput(player, input -> {
             if (input.equalsIgnoreCase("accept")) {
-                plugin.getCodeManager().deleteCode(code.getCode());
-                player.sendMessage(plugin.getMessage("code-deleted").replace("%code%", code.getCode()));
+                plugin.getCodeManager().deleteCode(code.getActiveCode());
+                player.sendMessage(plugin.getMessageComponent("code-deleted"));
                 if (fromGui) {
                     plugin.getGuiManager().openMainGui(player);
                 }
             } else {
-                player.sendMessage(plugin.getMessage("delete-cancelled"));
+                player.sendMessage(plugin.getMessageComponent("delete-cancelled"));
                 if (fromGui) {
                     plugin.getGuiManager().openEditorGui(player, code);
                 }
@@ -188,6 +199,6 @@ public class GuiListener implements Listener {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             plugin.getChatInputListener().removePending(player);
-        }, 100L); // 5 sekund
+        }, 100L);
     }
 }
