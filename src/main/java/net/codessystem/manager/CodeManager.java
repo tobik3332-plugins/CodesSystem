@@ -2,6 +2,7 @@ package net.codessystem.manager;
 
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -37,9 +38,9 @@ public class CodeManager {
             CodeModel code = new CodeModel(
                     codeStr,
                     config.getString("displayName", codeStr),
-                    config.getString("permission", "codes.use.code"),
+                    config.getString("permission", "codes.use.default"),
                     config.getString("command", "[console] give %player% diamond 1"),
-                    config.getInt("usesGlobal", 1)
+                    config.getInt("usesGlobal", 10)
             );
             code.setUsesSingle(config.getInt("usesSingle", 1));
             code.setCurrentGlobalUses(config.getInt("currentGlobalUses", 0));
@@ -101,13 +102,29 @@ public class CodeManager {
         if (file.exists()) {
             file.delete();
         }
-        codesMap.remove(codeStr.toLowerCase());
+        codesMap.remove(code.getCode().toLowerCase());
         return true;
     }
 
-    public CodeModel getCode(String codeStr) {
-        if (codeStr == null) return null;
-        return codesMap.get(codeStr.toLowerCase());
+    public CodeModel getCode(String query) {
+        if (query == null) return null;
+        String lowerQuery = query.toLowerCase();
+
+        // 1. Hledání podle samotného řetězce kódu
+        if (codesMap.containsKey(lowerQuery)) {
+            return codesMap.get(lowerQuery);
+        }
+
+        // 2. Hledání podle displayName (i s/bez barevných kódů)
+        for (CodeModel code : codesMap.values()) {
+            if (code.getDisplayName().equalsIgnoreCase(query) ||
+                ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', code.getDisplayName())).equalsIgnoreCase(query) ||
+                code.getCleanFileName().equalsIgnoreCase(query)) {
+                return code;
+            }
+        }
+
+        return null;
     }
 
     public Collection<CodeModel> getAllCodes() {
