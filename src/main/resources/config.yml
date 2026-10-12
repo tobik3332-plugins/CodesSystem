@@ -1,0 +1,120 @@
+# ====================================================== #
+#               CodesSystem Configuration               #
+# ====================================================== #
+
+messages:
+  prefix: "&8[&bCodesSystem&8] "
+  no-permission: "&cNemáš dostatečná oprávnění k použití tohoto příkazu."
+  code-not-found: "&cZadaný kód neexistuje."
+  code-already-used: "&cTento kód jsi již v minulosti uplatnil."
+  code-ip-limit: "&cTento kód byl z tvojí IP adresy již vyčerpán."
+  code-global-limit: "&cTento kód již dosáhl svého maximálního počtu globálních použití."
+  code-success: "&aKód &e%code% &abyl úspěšně uplatněn!"
+  code-created: "&aKód &e%code% &abyl úspěšně vytvořen!"
+  code-deleted: "&cKód &e%code% &abyl úspěšně smazán."
+  code-edited: "&aHodnota &e%field% &apro kód &e%code% &abyla upravena na: &f%value%"
+  code-reset-success: "&aKód &e%code% &abyl úspěšně resetován pro hráče &e%player%&a."
+  plugin-reloaded: "&aKonfigurace pluginu byla úspěšně znovu načtena."
+  delete-confirm-prompt: "&cOpravdu chceš smazat kód &e%code%&c? Napiš &aaccept &cpro potvrzení nebo &ecancel &cpro zrušení (lhůta 5 sekund)."
+  delete-cancelled: "&eMazání kódu bylo zrušeno."
+  delete-timeout: "&cČasový limit pro potvrzení smazání vypršel."
+  input-prompt: "&aZadej novou hodnotu do chatu (nebo napiš &ecancel &apro zrušení):"
+  input-cancelled: "&eZadávání bylo zrušeno."
+  availability-used: "&aHráč &e%player% &aJIŽ uplatnil kód &e%code%&a."
+  availability-not-used: "&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód &e%code%&a."
+
+gui:
+  main:
+    title: "&8Správa Kódů (Hlavní Menu)"
+    size: 54
+    create-button:
+      slot: 48
+      material: "EMERALD_BLOCK"
+      name: "&a+ Vytvořit Nový Kód"
+      lore:
+        - "&7Kliknutím vytvoříš nový kód"
+        - "&7pomocí zadání do chatu."
+    exhausted-button:
+      slot: 50
+      material: "REDSTONE_BLOCK"
+      name: "&cVyčerpané Kódy"
+      lore:
+        - "&7Zobrazí seznam kódů,"
+        - "&7které dosáhly globálního limitu."
+
+  exhausted:
+    title: "&8Vyčerpané Kódy"
+    size: 54
+    back-button:
+      slot: 49
+      material: "BARRIER"
+      name: "&cZpět"
+      lore:
+        - "&7Návrat do hlavního menu"
+
+  editor:
+    title: "&8Úprava Kódu: %code%"
+    size: 27
+    items:
+      name:
+        slot: 10
+        material: "NAME_TAG"
+        title: "&eDisplay Name"
+        lore:
+          - "&7Aktuální: &f%value%"
+          - ""
+          - "&eKlikni pro změnu názvu"
+      permission:
+        slot: 11
+        material: "PAPER"
+        title: "&ePermise"
+        lore:
+          - "&7Aktuální: &f%value%"
+          - ""
+          - "&eKlikni pro změnu permise"
+      command:
+        slot: 12
+        material: "COMMAND_BLOCK"
+        title: "&ePříkaz Odměny"
+        lore:
+          - "&7Aktuální: &f%value%"
+          - ""
+          - "&7Použij &f[console] &7nebo &f[player]"
+          - "&eKlikni pro změnu příkazu"
+      uses-single:
+        slot: 13
+        material: "PLAYER_HEAD"
+        title: "&eLimit na IP"
+        lore:
+          - "&7Aktuální limit: &f%value%"
+          - ""
+          - "&eKlikni pro změnu limitu na IP"
+      uses-global:
+        slot: 14
+        material: "BEACON"
+        title: "&eGlobální Limit"
+        lore:
+          - "&7Aktuální: &f%used% / %max%"
+          - ""
+          - "&eKlikni pro změnu globálního limitu"
+      refresh:
+        slot: 15
+        material: "REPEATER"
+        title: "&eAuto-Refresh"
+        lore:
+          - "&7Stav: &f%value%"
+          - ""
+          - "&eKlikni pro přepnutí true/false"
+      register:
+        slot: 22
+        material: "SLIME_BALL"
+        title: "&aUložit a Registrovat"
+        lore:
+          - "&7Uloží všechny změny a vrátí"
+          - "&7tě do hlavního menu."
+      delete:
+        slot: 26
+        material: "TNT"
+        title: "&cSmazat Kód"
+        lore:
+          - "&7Trvale odstraní tento kód."
