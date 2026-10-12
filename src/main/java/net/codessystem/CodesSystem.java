@@ -50,29 +50,27 @@ public class CodesSystem extends JavaPlugin {
 
     public Component parseText(String input) {
         if (input == null) return Component.empty();
-        
-        // 1. Zpracování klasických & kódů
-        String colorized = ChatColor.translateAlternateColorCodes('&', input);
-        
-        // 2. Pokud obsahuje MiniMessage tagy (např. <hover> nebo <click>), převedeme přes MiniMessage
-        if (colorized.contains("<") && colorized.contains(">")) {
+
+        String prefix = getConfig().getString("messages.prefix", "");
+        if (input.contains("%prefix%")) {
+            input = input.replace("%prefix%", prefix);
+        }
+
+        // Pokud řetězec obsahuje MiniMessage tagy (<click>, <hover>, atd.)
+        if (input.contains("<") && input.contains(">")) {
             try {
-                // Převod § na legacy formát pro kompatibilitu s MiniMessage
-                return miniMessage.deserialize(colorized);
+                // Převod & barev na § a následně parsování s MiniMessage kompatibilitou
+                String legacyFormattted = ChatColor.translateAlternateColorCodes('&', input);
+                return miniMessage.deserialize(legacyFormattted);
             } catch (Exception ignored) {}
         }
 
+        String colorized = ChatColor.translateAlternateColorCodes('&', input);
         return LegacyComponentSerializer.legacySection().deserialize(colorized);
     }
 
     public Component getMessageComponent(String path) {
         String msg = getConfig().getString("messages." + path, "");
-        String prefix = getConfig().getString("messages.prefix", "");
-
-        if (msg.contains("%prefix%")) {
-            msg = msg.replace("%prefix%", prefix);
-        }
-
         return parseText(msg);
     }
 }
