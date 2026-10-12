@@ -21,10 +21,12 @@ commands:
   acode:
     description: Admin commands for codes system.
     permission: codes.admin.gui
-    usage: /acode <reset|reload|list|availability>
+    usage: /acode <reset|reload|list|availability|getcode>
 
 permissions:
   codes.use.code:
+    default: true
+  codes.use.default:
     default: true
   codes.admin.gui:
     default: op
@@ -35,4 +37,6 @@ permissions:
   codes.admin.list:
     default: op
   codes.admin.availability:
+    default: op
+  codes.admin.getcode:
     default: op
