@@ -46,6 +46,7 @@ public class CodeManager {
             code.setUsesSingle(config.getInt("usesSingle", 1));
             code.setCurrentGlobalUses(config.getInt("currentGlobalUses", 0));
             code.setRefresh(config.getBoolean("refresh", false));
+            code.setIconMaterial(config.getString("iconMaterial", "PAPER"));
             code.setUsedPlayers(config.getStringList("usedPlayers"));
             code.setUsedIps(config.getStringList("usedIps"));
 
@@ -77,6 +78,7 @@ public class CodeManager {
         config.set("usesGlobal", code.getUsesGlobal());
         config.set("currentGlobalUses", code.getCurrentGlobalUses());
         config.set("refresh", code.isRefresh());
+        config.set("iconMaterial", code.getIconMaterial());
         config.set("usedPlayers", code.getUsedPlayers());
         config.set("usedIps", code.getUsedIps());
 
@@ -137,8 +139,7 @@ public class CodeManager {
     }
 
     public Collection<CodeModel> getAllCodes() {
-        Set<CodeModel> uniqueCodes = new HashSet<>(codesMap.values());
-        return uniqueCodes;
+        return new HashSet<>(codesMap.values());
     }
 
     public String generateRandomCode(int length) {
