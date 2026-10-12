@@ -50,10 +50,16 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         }
 
         if (name.equals("ecode")) {
+            if (!sender.hasPermission("codes.admin.edit-cmds")) {
+                sender.sendMessage(plugin.getMessageComponent("no-permission"));
+                return true;
+            }
+
             if (args.length == 0) {
                 sender.sendMessage(plugin.getMessageComponent("help-ecode"));
                 return true;
             }
+
             if (args[0].equalsIgnoreCase("create")) {
                 if (args.length < 2) {
                     sender.sendMessage(plugin.getMessageComponent("help-ecode-create"));
@@ -189,7 +195,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
                     Component prefixComp = plugin.parseText(plugin.getConfig().getString("messages.prefix", ""));
                     Component baseMsg = plugin.parseText(rawMsg);
-                    
+
                     Component codeComp = Component.text(code.getActiveCode(), NamedTextColor.AQUA)
                             .clickEvent(ClickEvent.copyToClipboard(code.getActiveCode()))
                             .hoverEvent(HoverEvent.showText(plugin.parseText("&eKlikni pro zkopírování")));
@@ -345,6 +351,8 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         }
 
         if (name.equals("ecode")) {
+            if (!sender.hasPermission("codes.admin.edit-cmds")) return list;
+
             if (args.length == 1) {
                 list.addAll(List.of("create", "delete", "edit"));
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("edit"))) {
