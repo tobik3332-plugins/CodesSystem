@@ -62,8 +62,15 @@ public class CodesSystem extends JavaPlugin {
             msg = msg.replace("%prefix%", prefix);
         }
 
-        String legacyTranslated = ChatColor.translateAlternateColorCodes('&', msg);
+        String translated = ChatColor.translateAlternateColorCodes('&', msg);
 
-        return miniMessage.deserialize(legacyTranslated);
+        // Bezpečné parsování: Podpora pro MiniMessage tagy, pokud jsou v textu přítomny, jinak fallback na legacy
+        try {
+            if (translated.contains("<") && translated.contains(">")) {
+                return miniMessage.deserialize(translated);
+            }
+        } catch (Exception ignored) {}
+
+        return parseText(translated);
     }
 }
