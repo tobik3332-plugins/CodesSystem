@@ -3,6 +3,7 @@ package net.codessystem.command;
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length < 1) {
-                player.sendMessage(plugin.getMessage("prefix") + "Použití: /code <code>");
+                player.sendMessage(plugin.getMessage("code-not-found"));
                 return true;
             }
             redeemCode(player, args[0]);
@@ -45,12 +46,12 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
         if (name.equals("ecode")) {
             if (args.length == 0) {
-                sender.sendMessage(plugin.getMessage("prefix") + "Použití: /ecode <create|delete|edit>");
+                sender.sendMessage("Použití: /ecode <create|delete|edit>");
                 return true;
             }
             if (args[0].equalsIgnoreCase("create")) {
                 if (args.length < 5) {
-                    sender.sendMessage(plugin.getMessage("prefix") + "Použití: /ecode create <kod> <pocet_pouziti> <command> <permise>");
+                    sender.sendMessage("Použití: /ecode create <kod> <pocet_pouziti> <command> <permise>");
                     return true;
                 }
                 String codeStr = args[1];
@@ -66,7 +67,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
             if (args[0].equalsIgnoreCase("delete")) {
                 if (args.length < 2) {
-                    sender.sendMessage(plugin.getMessage("prefix") + "Použití: /ecode delete <kod>");
+                    sender.sendMessage("Použití: /ecode delete <kod>");
                     return true;
                 }
                 CodeModel code = plugin.getCodeManager().getCode(args[1]);
@@ -85,7 +86,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
             if (args[0].equalsIgnoreCase("edit")) {
                 if (args.length < 4) {
-                    sender.sendMessage(plugin.getMessage("prefix") + "Použití: /ecode edit <kod> <name|permission|uses-single|uses-global|refresh> <hodnota>");
+                    sender.sendMessage("Použití: /ecode edit <kod> <name|permission|uses-single|uses-global|refresh> <hodnota>");
                     return true;
                 }
                 CodeModel code = plugin.getCodeManager().getCode(args[1]);
@@ -105,7 +106,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     case "uses-global" -> code.setUsesGlobal(Integer.parseInt(value));
                     case "refresh" -> code.setRefresh(Boolean.parseBoolean(value));
                     default -> {
-                        sender.sendMessage(plugin.getMessage("prefix") + "Neznámé pole ke změně.");
+                        sender.sendMessage("Neznámé pole ke změně.");
                         return true;
                     }
                 }
@@ -134,28 +135,47 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             }
 
             if (args[0].equalsIgnoreCase("reset")) {
-                if (args.length < 3) return true;
-                String targetPlayer = args[1];
+                if (args.length < 3) {
+                    sender.sendMessage("Použití: /acode reset <hráč> <kod>");
+                    return true;
+                }
+                String targetPlayerName = args[1];
                 CodeModel code = plugin.getCodeManager().getCode(args[2]);
                 if (code != null) {
-                    code.getUsedPlayers().remove(targetPlayer.toLowerCase());
+                    OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(targetPlayerName);
+                    String uuidStr = offPlayer.getUniqueId().toString().toLowerCase();
+
+                    boolean removed = code.getUsedPlayers().remove(uuidStr) || code.getUsedPlayers().remove(targetPlayerName.toLowerCase());
+
+                    if (offPlayer.isOnline() && offPlayer.getPlayer() != null && offPlayer.getPlayer().getAddress() != null) {
+                        String ip = offPlayer.getPlayer().getAddress().getHostString();
+                        code.getUsedIps().remove(ip);
+                    }
+
                     plugin.getCodeManager().saveCode(code, code.getCleanFileName());
-                    sender.sendMessage(plugin.getMessage("code-reset-success").replace("%code%", code.getCode()).replace("%player%", targetPlayer));
+                    sender.sendMessage(plugin.getMessage("code-reset-success").replace("%code%", code.getCode()).replace("%player%", targetPlayerName));
+                } else {
+                    sender.sendMessage(plugin.getMessage("code-not-found"));
                 }
                 return true;
             }
 
             if (args[0].equalsIgnoreCase("availability")) {
                 if (args.length < 3) return true;
-                String targetPlayer = args[1];
+                String targetPlayerName = args[1];
                 CodeModel code = plugin.getCodeManager().getCode(args[2]);
                 if (code != null) {
-                    boolean used = code.getUsedPlayers().contains(targetPlayer.toLowerCase());
+                    OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(targetPlayerName);
+                    String uuidStr = offPlayer.getUniqueId().toString().toLowerCase();
+                    boolean used = code.getUsedPlayers().contains(uuidStr) || code.getUsedPlayers().contains(targetPlayerName.toLowerCase());
+
                     if (used) {
-                        sender.sendMessage(plugin.getMessage("availability-used").replace("%player%", targetPlayer).replace("%code%", code.getCode()));
+                        sender.sendMessage(plugin.getMessage("availability-used").replace("%player%", targetPlayerName).replace("%code%", code.getCode()));
                     } else {
-                        sender.sendMessage(plugin.getMessage("availability-not-used").replace("%player%", targetPlayer).replace("%code%", code.getCode()));
+                        sender.sendMessage(plugin.getMessage("availability-not-used").replace("%player%", targetPlayerName).replace("%code%", code.getCode()));
                     }
+                } else {
+                    sender.sendMessage(plugin.getMessage("code-not-found"));
                 }
                 return true;
             }
@@ -177,7 +197,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         }
 
         String ip = player.getAddress() != null ? player.getAddress().getHostString() : "unknown";
-        String playerUUID = player.getUniqueId().toString();
+        String playerUUID = player.getUniqueId().toString().toLowerCase();
 
         long ipUses = code.getUsedIps().stream().filter(i -> i.equalsIgnoreCase(ip)).count();
         if (ipUses >= code.getUsesSingle()) {
@@ -190,12 +210,12 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (code.getUsedPlayers().contains(playerUUID.toLowerCase())) {
+        if (code.getUsedPlayers().contains(playerUUID)) {
             player.sendMessage(plugin.getMessage("code-already-used"));
             return;
         }
 
-        code.getUsedPlayers().add(playerUUID.toLowerCase());
+        code.getUsedPlayers().add(playerUUID);
         code.getUsedIps().add(ip.toLowerCase());
         code.setCurrentGlobalUses(code.getCurrentGlobalUses() + 1);
 
@@ -214,13 +234,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         player.sendMessage(plugin.getMessage("code-success").replace("%code%", code.getCode()));
 
         if (code.isRefresh()) {
-            String oldCleanName = code.getCleanFileName();
-            String newCodeStr = plugin.getCodeManager().generateRandomCode(8);
-            code.setCode(newCodeStr);
-            code.getUsedPlayers().clear();
-            code.getUsedIps().clear();
-            code.setCurrentGlobalUses(0);
-            plugin.getCodeManager().saveCode(code, oldCleanName);
+            plugin.getCodeManager().refreshCodeString(code);
         } else {
             plugin.getCodeManager().saveCode(code, code.getCleanFileName());
         }
@@ -231,13 +245,12 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         List<String> list = new ArrayList<>();
         String name = cmd.getName().toLowerCase();
 
+        // /code nemá mít žadne doplnovani pro hrac
         if (name.equals("code")) {
-            if (args.length == 1) {
-                for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-                    list.add(code.getCode());
-                }
-            }
-        } else if (name.equals("ecode")) {
+            return list; 
+        }
+
+        if (name.equals("ecode")) {
             if (args.length == 1) {
                 list.addAll(List.of("create", "delete", "edit"));
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("edit"))) {
@@ -250,6 +263,10 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
         } else if (name.equals("acode")) {
             if (args.length == 1) {
                 list.addAll(List.of("reset", "reload", "list", "availability"));
+            } else if (args.length == 2 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("availability"))) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    list.add(p.getName());
+                }
             } else if (args.length == 3 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("availability"))) {
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
                     list.add(code.getCode());
