@@ -77,7 +77,20 @@ public class CodeManager {
             e.printStackTrace();
         }
 
+        codesMap.values().removeIf(c -> c.getCleanFileName().equalsIgnoreCase(code.getCleanFileName()));
         codesMap.put(code.getCode().toLowerCase(), code);
+    }
+
+    public void refreshCodeString(CodeModel code) {
+        codesMap.remove(code.getCode().toLowerCase());
+
+        String newCodeStr = generateRandomCode(8);
+        code.setCode(newCodeStr);
+        code.getUsedPlayers().clear();
+        code.getUsedIps().clear();
+        code.setCurrentGlobalUses(0);
+
+        saveCode(code, code.getCleanFileName());
     }
 
     public boolean deleteCode(String codeStr) {
