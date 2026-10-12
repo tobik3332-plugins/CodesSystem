@@ -1,0 +1,54 @@
+name: Build Plugin and Release
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Calculate Version Number
+        id: calc_version
+        run: |
+          BUILD_NUM=$(git rev-list --count HEAD)
+          
+          # Výpočet dynamického verzování:
+          # X = stovky, Y = desítky, Z = jednotky
+          X=$(( BUILD_NUM / 100 ))
+          Y=$(( (BUILD_NUM % 100) / 10 ))
+          Z=$(( BUILD_NUM % 10 ))
+          
+          VERSION="${X}.${Y}.${Z}"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Calculated Version: ${VERSION} (Build #${BUILD_NUM})"
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Rename Artifact
+        run: |
+          VERSION="${{ steps.calc_version.outputs.VERSION }}"
+          mkdir -p output
+          cp target/CodesSystem-*.jar output/CodesSystem-${VERSION}.jar
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodesSystem-${{ steps.calc_version.outputs.VERSION }}
+          path: output/CodesSystem-*.jar
