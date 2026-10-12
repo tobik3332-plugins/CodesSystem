@@ -17,145 +17,145 @@
 # ====================================================== #
 
 messages:
-  prefix: "<dark_gray>[<cyan>CodesSystem<dark_gray>] "
-  no-permission: "%prefix%<red>Nemáš dostatečná oprávnění k použití tohoto příkazu."
-  code-not-found: "%prefix%<red>Zadaný kód neexistuje."
+  prefix: "&8[&bCodesSystem&8] "
+  no-permission: "%prefix%&cNemáš dostatečná oprávnění k použití tohoto příkazu."
+  code-not-found: "%prefix%&cZadaný kód neexistuje."
   code-already-used: "%prefix%&cTento kód jsi již v minulosti uplatnil."
-  code-ip-limit: "%prefix%<red>Tento kód byl z tvojí IP adresy již vyčerpán."
-  code-global-limit: "%prefix%<red>Tento kód již dosáhl svého maximálního počtu globálních použití."
-  code-success: "%prefix%<green>Kód <yellow>%code% <green>byl úspěšně uplatněn!"
-  code-created: "%prefix%<green>Kód pro <yellow>%display% <green>byl úspěšně vytvořen! Otevírám GUI..."
-  code-deleted: "%prefix%<red>Kód <yellow>%code% <red>byl úspěšně smazán."
-  code-edited: "%prefix%<green>Hodnota <yellow>%field% <green>pro kód <yellow>%code% <green>byla upravena na: <white>%value%"
-  code-reset-success: "%prefix%<green>Kód <yellow>%code% <green>byl úspěšně resetován pro hráče <yellow>%player%<green>."
-  plugin-reloaded: "%prefix%<green>Konfigurace pluginu byla úspěšně znovu načtena."
-  delete-confirm-prompt: "%prefix%<red>Opravdu chceš smazat kód <yellow>%code%<red>? Napiš <green>accept <red>pro potvrzení nebo <yellow>cancel <red>pro zrušení (lhůta 5 sekund)."
-  delete-cancelled: "%prefix%<yellow>Mazání kódu bylo zrušeno."
-  delete-timeout: "%prefix%<red>Časový limit pro potvrzení smazání vypršel."
-  input-prompt: "%prefix%<green>Zadej novou hodnotu do chatu (nebo napiš <yellow>cancel <green>pro zrušení):"
-  input-cancelled: "%prefix%<yellow>Zadávání bylo zrušeno."
-  availability-used: "%prefix%<green>Hráč <yellow>%player% <green>JIŽ uplatnil kód <yellow>%code%<green>."
-  availability-not-used: "%prefix%<red>Hráč <yellow>%player% <green>JEŠTĚ NEUPLATNIL kód <yellow>%code%<green>."
+  code-ip-limit: "%prefix%&cTento kód byl z tvojí IP adresy již vyčerpán."
+  code-global-limit: "%prefix%&cTento kód již dosáhl svého maximálního počtu globálních použití."
+  code-success: "%prefix%&aKód &e%code% &abyl úspěšně uplatněn!"
+  code-created: "%prefix%&aKód pro &e%display% &abyl úspěšně vytvořen! Otevírám GUI..."
+  code-deleted: "%prefix%&cKód &e%code% &abyl úspěšně smazán."
+  code-edited: "%prefix%&aHodnota &e%field% &apro kód &e%code% &abyla upravena na: &f%value%"
+  code-reset-success: "%prefix%&aKód &e%code% &abyl úspěšně resetován pro hráče &e%player%&a."
+  plugin-reloaded: "%prefix%&aKonfigurace pluginu byla úspěšně znovu načtena."
+  delete-confirm-prompt: "%prefix%&cOpravdu chceš smazat kód &e%code%&c? Napiš &aaccept &cpro potvrzení nebo &ecancel &cpro zrušení (lhůta 5 sekund)."
+  delete-cancelled: "%prefix%&eMazání kódu bylo zrušeno."
+  delete-timeout: "%prefix%&cČasový limit pro potvrzení smazání vypršel."
+  input-prompt: "%prefix%&aZadej novou hodnotu do chatu (nebo napiš &ecancel &apro zrušení):"
+  input-cancelled: "%prefix%&eZadávání bylo zrušeno."
+  availability-used: "%prefix%&aHráč &e%player% &aJIŽ uplatnil kód &e%code%&a."
+  availability-not-used: "%prefix%&cHráč &e%player% &aJEŠTĚ NEUPLATNIL kód &e%code%&a."
   
-  # Text na obrázku (příkaz /acode getcode):
-  getcode-success: "%prefix%<green>Aktuální kód pro %display% <green>je: <hover:show_text:'<yellow>Klikni pro zkopírování'><click:copy_to_clipboard:'%code%'><aqua>%code%</click></hover>"
+  # Text příkazu /acode getcode (kliknutím zkopíruje kód do schránky):
+  getcode-success: "%prefix%&aAktuální kód pro &e%display% &aje: <hover:show_text:'&eKlikni pro zkopíruání'><click:copy_to_clipboard:'%code%'>&b%code%</click></hover>"
 
   # Výpis seznamu kódů (/acode list)
-  list-header: "%prefix%<green>Seznam aktivních kódů:"
-  list-format: "<dark_gray>- <yellow>%code% <gray>(<white>%display%<gray>)"
+  list-header: "%prefix%&aSeznam aktivních kódů:"
+  list-format: "&8- &e%code% &7(&f%display%&7)"
 
   # Nápovědy příkazů (Help Messages)
-  help-code: "%prefix%<gray>Použití: <white>/code <code>"
-  help-ecode: "%prefix%<gray>Použití: <white>/ecode <create|delete|edit>"
-  help-ecode-create: "%prefix%<gray>Použití: <white>/ecode create <displayName>"
-  help-ecode-delete: "%prefix%<gray>Použití: <white>/ecode delete <code|displayName>"
-  help-ecode-edit: "%prefix%<gray>Použití: <white>/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh|stable-code> <hodnota>"
-  help-acode: "%prefix%<gray>Použití: <white>/acode <reset|reload|list|availability|getcode>"
-  help-acode-reset: "%prefix%<gray>Použití: <white>/acode reset <hráč> <kod>"
-  help-acode-getcode: "%prefix%<gray>Použití: <white>/acode getcode <displayName>"
-  help-acode-availability: "%prefix%<gray>Použití: <white>/acode availability <hráč> <kod>"
+  help-code: "%prefix%&7Použití: &f/code <code>"
+  help-ecode: "%prefix%&7Použití: &f/ecode <create|delete|edit>"
+  help-ecode-create: "%prefix%&7Použití: &f/ecode create <displayName>"
+  help-ecode-delete: "%prefix%&7Použití: &f/ecode delete <code|displayName>"
+  help-ecode-edit: "%prefix%&7Použití: &f/ecode edit <code|displayName> <name|permission|uses-single|uses-global|refresh|stable-code> <hodnota>"
+  help-acode: "%prefix%&7Použití: &f/acode <reset|reload|list|availability|getcode>"
+  help-acode-reset: "%prefix%&7Použití: &f/acode reset <hráč> <kod>"
+  help-acode-getcode: "%prefix%&7Použití: &f/acode getcode <displayName>"
+  help-acode-availability: "%prefix%&7Použití: &f/acode availability <hráč> <kod>"
 
 gui:
   main:
-    title: "<dark_gray>Správa Kódů (Hlavní Menu)"
+    title: "&8Správa Kódů (Hlavní Menu)"
     size: 54
     create-button:
       slot: 48
       material: "EMERALD_BLOCK"
-      name: "<green>+ Vytvořit Nový Kód"
+      name: "&a+ Vytvořit Nový Kód"
       lore:
-        - "<gray>Kliknutím vytvoříš nový kód"
-        - "<gray>pomocí zadání do chatu."
+        - "&7Kliknutím vytvoříš nový kód"
+        - "&7pomocí zadání do chatu."
     exhausted-button:
       slot: 50
       material: "REDSTONE_BLOCK"
-      name: "<red>Vyčerpané Kódy"
+      name: "&cVyčerpané Kódy"
       lore:
-        - "<gray>Zobrazí seznam kódů,"
-        - "<gray>které dosáhly globálního limitu."
+        - "&7Zobrazí seznam kódů,"
+        - "&7které dosáhly globálního limitu."
 
   exhausted:
-    title: "<dark_gray>Vyčerpané Kódy"
+    title: "&8Vyčerpané Kódy"
     size: 54
     back-button:
       slot: 49
       material: "BARRIER"
-      name: "<red>Zpět"
+      name: "&cZpět"
       lore:
-        - "<gray>Návrat do hlavního menu"
+        - "&7Návrat do hlavního menu"
 
   editor:
-    title: "<dark_gray>Úprava Kódu: %code%"
+    title: "&8Úprava Kódu: %code%"
     size: 27
     items:
       name:
         slot: 9
         material: "NAME_TAG"
-        title: "<yellow>Display Name"
+        title: "&eDisplay Name"
         lore:
-          - "<gray>Aktuální: <white>%value%"
+          - "&7Aktuální: &f%value%"
           - ""
-          - "<yellow>Klikni pro změnu názvu"
+          - "&eKlikni pro změnu názvu"
       permission:
         slot: 10
         material: "PAPER"
-        title: "<yellow>Permise"
+        title: "&ePermise"
         lore:
-          - "<gray>Aktuální: <white>%value%"
+          - "&7Aktuální: &f%value%"
           - ""
-          - "<yellow>Klikni pro změnu permise"
+          - "&eKlikni pro změnu permise"
       command:
         slot: 11
         material: "COMMAND_BLOCK"
-        title: "<yellow>Příkaz Odměny"
+        title: "&ePříkaz Odměny"
         lore:
-          - "<gray>Aktuální: <white>%value%"
+          - "&7Aktuální: &f%value%"
           - ""
-          - "<gray>Použij <white>[console] <gray>nebo <white>[player]"
-          - "<yellow>Klikni pro změnu příkazu"
+          - "&7Použij &f[console] &7nebo &f[player]"
+          - "&eKlikni pro změnu příkazu"
       uses-single:
         slot: 12
         material: "PLAYER_HEAD"
-        title: "<yellow>Limit na IP"
+        title: "&eLimit na IP"
         lore:
-          - "<gray>Aktuální limit: <white>%value%"
+          - "&7Aktuální limit: &f%value%"
           - ""
-          - "<yellow>Klikni pro změnu limitu na IP"
+          - "&eKlikni pro změnu limitu na IP"
       uses-global:
         slot: 13
         material: "BEACON"
-        title: "<yellow>Globální Limit"
+        title: "&eGlobální Limit"
         lore:
-          - "<gray>Aktuální: <white>%used% / %max%"
+          - "&7Aktuální: &f%used% / %max%"
           - ""
-          - "<yellow>Klikni pro změnu globálního limitu"
+          - "&eKlikni pro změnu globálního limitu"
       refresh:
         slot: 14
         material: "REPEATER"
-        title: "<yellow>Auto-Refresh"
+        title: "&eAuto-Refresh"
         lore:
-          - "<gray>Stav: <white>%value%"
+          - "&7Stav: &f%value%"
           - ""
-          - "<yellow>Klikni pro přepnutí true/false"
+          - "&eKlikni pro přepnutí true/false"
       stable-code:
         slot: 15
         material: "ANVIL"
-        title: "<yellow>Stálý Kód (Stable Code)"
+        title: "&eStálý Kód (Stable Code)"
         lore:
-          - "<gray>Aktuální: <white>%value%"
+          - "&7Aktuální: &f%value%"
           - ""
-          - "<gray>Použije se pokud je refresh <white>false"
-          - "<yellow>Klikni pro změnu stálého kódu"
+          - "&7Použije se pokud je refresh &ffalse"
+          - "&eKlikni pro změnu stálého kódu"
       register:
         slot: 22
         material: "SLIME_BALL"
-        title: "<green>Uložit a Registrovat"
+        title: "&aUložit a Registrovat"
         lore:
-          - "<gray>Uloží všechny změny a vrátí"
-          - "<gray>tě do hlavního menu."
+          - "&7Uloží všechny změny a vrátí"
+          - "&7tě do hlavního menu."
       delete:
         slot: 26
         material: "TNT"
-        title: "<red>Smazat Kód"
+        title: "&cSmazat Kód"
         lore:
-          - "<gray>Trvale odstraní tento kód."
+          - "&7Trvale odstraní tento kód."
