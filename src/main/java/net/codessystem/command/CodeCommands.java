@@ -2,7 +2,6 @@ package net.codessystem.command;
 
 import net.codessystem.CodesSystem;
 import net.codessystem.model.CodeModel;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
@@ -61,8 +60,8 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 CodeModel newCode = new CodeModel(generatedCode, displayName, "codes.use.default", "[console] give %player% diamond 1", 10);
                 plugin.getCodeManager().saveCode(newCode, null);
 
-                String msg = plugin.getConfig().getString("messages.code-created", "").replace("%display%", displayName);
-                sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                String rawMsg = plugin.getConfig().getString("messages.code-created", "").replace("%display%", displayName);
+                sender.sendMessage(plugin.parseText(rawMsg));
 
                 if (sender instanceof Player player) {
                     plugin.getGuiManager().openEditorGui(player, newCode);
@@ -84,8 +83,8 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     plugin.getGuiListener().promptDeleteConfirmation(player, code, false);
                 } else {
                     plugin.getCodeManager().deleteCode(code.getActiveCode());
-                    String msg = plugin.getConfig().getString("messages.code-deleted", "").replace("%code%", code.getActiveCode());
-                    sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                    String rawMsg = plugin.getConfig().getString("messages.code-deleted", "").replace("%code%", code.getActiveCode());
+                    sender.sendMessage(plugin.parseText(rawMsg));
                 }
                 return true;
             }
@@ -119,11 +118,11 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 }
                 plugin.getCodeManager().saveCode(code, oldClean);
 
-                String msg = plugin.getConfig().getString("messages.code-edited", "")
+                String rawMsg = plugin.getConfig().getString("messages.code-edited", "")
                         .replace("%field%", field)
                         .replace("%code%", code.getActiveCode())
                         .replace("%value%", value);
-                sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                sender.sendMessage(plugin.parseText(rawMsg));
                 return true;
             }
         }
@@ -152,10 +151,10 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 }
                 sender.sendMessage(plugin.getMessageComponent("list-header"));
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-                    String line = plugin.getConfig().getString("messages.list-format", "<dark_gray>- <yellow>%code% <gray>(<white>%display%<gray>)")
+                    String line = plugin.getConfig().getString("messages.list-format", "&8- &e%code% &7(&f%display%&7)")
                             .replace("%code%", code.getActiveCode())
                             .replace("%display%", code.getDisplayName());
-                    sender.sendMessage(plugin.getMiniMessage().deserialize(line));
+                    sender.sendMessage(plugin.parseText(line));
                 }
                 return true;
             }
@@ -175,7 +174,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                             .replace("%display%", code.getDisplayName())
                             .replace("%code%", code.getActiveCode());
 
-                    sender.sendMessage(plugin.getMiniMessage().deserialize(rawMsg));
+                    sender.sendMessage(plugin.parseText(rawMsg));
                 } else {
                     sender.sendMessage(plugin.getMessageComponent("code-not-found"));
                 }
@@ -207,10 +206,10 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
 
                     plugin.getCodeManager().saveCode(code, code.getCleanFileName());
 
-                    String msg = plugin.getConfig().getString("messages.code-reset-success", "")
+                    String rawMsg = plugin.getConfig().getString("messages.code-reset-success", "")
                             .replace("%code%", code.getActiveCode())
                             .replace("%player%", targetPlayerName);
-                    sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                    sender.sendMessage(plugin.parseText(rawMsg));
                 } else {
                     sender.sendMessage(plugin.getMessageComponent("code-not-found"));
                 }
@@ -234,15 +233,17 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                     boolean used = code.getUsedPlayers().contains(uuidStr) || code.getUsedPlayers().contains(targetPlayerName.toLowerCase());
 
                     if (used) {
-                        String msg = plugin.getConfig().getString("messages.availability-used", "")
+                        String rawMsg = plugin.getConfig().getString("messages.availability-used", "")
                                 .replace("%player%", targetPlayerName)
+                                .replace("%display%", code.getDisplayName())
                                 .replace("%code%", code.getActiveCode());
-                        sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                        sender.sendMessage(plugin.parseText(rawMsg));
                     } else {
-                        String msg = plugin.getConfig().getString("messages.availability-not-used", "")
+                        String rawMsg = plugin.getConfig().getString("messages.availability-not-used", "")
                                 .replace("%player%", targetPlayerName)
+                                .replace("%display%", code.getDisplayName())
                                 .replace("%code%", code.getActiveCode());
-                        sender.sendMessage(plugin.getMiniMessage().deserialize(msg));
+                        sender.sendMessage(plugin.parseText(rawMsg));
                     }
                 } else {
                     sender.sendMessage(plugin.getMessageComponent("code-not-found"));
@@ -301,9 +302,9 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
         }
 
-        String msg = plugin.getConfig().getString("messages.code-success", "")
+        String rawMsg = plugin.getConfig().getString("messages.code-success", "")
                 .replace("%code%", code.getActiveCode());
-        player.sendMessage(plugin.getMiniMessage().deserialize(msg));
+        player.sendMessage(plugin.parseText(rawMsg));
 
         if (code.isRefresh()) {
             plugin.getCodeManager().refreshCodeString(code);
@@ -326,7 +327,6 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 list.addAll(List.of("create", "delete", "edit"));
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("edit"))) {
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-                    list.add(code.getActiveCode());
                     list.add(code.getCleanFileName());
                 }
             } else if (args.length == 3 && args[0].equalsIgnoreCase("edit")) {
@@ -345,7 +345,7 @@ public class CodeCommands implements CommandExecutor, TabCompleter {
                 }
             } else if (args.length == 3 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("availability"))) {
                 for (CodeModel code : plugin.getCodeManager().getAllCodes()) {
-                    list.add(code.getActiveCode());
+                    list.add(code.getCleanFileName());
                 }
             }
         }
