@@ -45,6 +45,11 @@ public class CodesSystem extends JavaPlugin {
     public String getMessage(String path) {
         String msg = getConfig().getString("messages." + path, "");
         String prefix = getConfig().getString("messages.prefix", "");
-        return ChatColor.translateAlternateColorCodes('&', prefix + msg);
+        
+        if (msg.contains("%prefix%")) {
+            msg = msg.replace("%prefix%", prefix);
+        }
+        
+        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 }
