@@ -1,0 +1,38 @@
+name: CodesSystem
+version: '${project.version}'
+main: net.codessystem.CodesSystem
+api-version: '1.20'
+author: Custom
+description: Advanced Redeem Codes System
+
+commands:
+  code:
+    description: Redeem a reward code.
+    permission: codes.use.code
+    usage: /code <code>
+  codes:
+    description: Open administrator codes GUI.
+    permission: codes.admin.gui
+    usage: /codes
+  ecode:
+    description: Edit and manage reward codes.
+    permission: codes.admin.gui
+    usage: /ecode <create|delete|edit>
+  acode:
+    description: Admin commands for codes system.
+    permission: codes.admin.gui
+    usage: /acode <reset|reload|list|availability>
+
+permissions:
+  codes.use.code:
+    default: true
+  codes.admin.gui:
+    default: op
+  codes.admin.reset:
+    default: op
+  codes.admin.reload:
+    default: op
+  codes.admin.list:
+    default: op
+  codes.admin.availability:
+    default: op
