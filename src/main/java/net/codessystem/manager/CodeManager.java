@@ -55,9 +55,16 @@ public class CodeManager {
     }
 
     public void registerCodeInMap(CodeModel code) {
+        // Pokud je zapnutý refresh, registrujeme POUZE aktuální proměnlivý kód a displayName/cleanName.
+        // Stabilní kód registrujeme pouze tehdy, když refresh není aktivní, aby staré kódy nefungovaly!
         codesMap.put(code.getActiveCode().toLowerCase(), code);
-        codesMap.put(code.getCode().toLowerCase(), code);
-        codesMap.put(code.getStableCode().toLowerCase(), code);
+        codesMap.put(code.getDisplayName().toLowerCase(), code);
+        codesMap.put(code.getCleanFileName().toLowerCase(), code);
+        
+        if (!code.isRefresh()) {
+            codesMap.put(code.getCode().toLowerCase(), code);
+            codesMap.put(code.getStableCode().toLowerCase(), code);
+        }
     }
 
     public void saveCode(CodeModel code, String oldCleanFileName) {
@@ -93,7 +100,8 @@ public class CodeManager {
     }
 
     public void refreshCodeString(CodeModel code) {
-        codesMap.remove(code.getActiveCode().toLowerCase());
+        // Kompletně vymažeme starý kód z mapy paměti
+        codesMap.values().removeIf(c -> c.getCleanFileName().equalsIgnoreCase(code.getCleanFileName()));
 
         String newCodeStr = generateRandomCode(8);
         code.setCode(newCodeStr);
